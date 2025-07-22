@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>1933, 체제를 돌러보다</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    @font-face {
+        font-family: 'Danjo-bold-Regular';
+        src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-1@1.1/Danjo-bold-Regular.woff2') format('woff2');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    /* Danjo-bold-Regular 글로벌 적용 */
+    body {
+      font-family: 'Danjo-bold-Regular', sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* 배경 이미지만을 위한 별도의 div */
+    .background-image-blur {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        /* 1933 독일 선거 지도 이미지로 변경 */
+        background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/eb/Wahl_zum_Reichstag_1932-11.png'); /* 1933년 선거 지도는 1932년 11월 선거와 동일한 이미지 사용 */
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-attachment: fixed;
+        filter: blur(15px); /* 흐림 효과 15px (대략 30% 흐림) */
+        -webkit-filter: blur(15px);
+        z-index: -1;
+    }
+
+    /* 모든 UI 콘텐츠를 담을 래퍼 */
+    .content-wrapper {
+        position: relative;
+        z-index: 1;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    h2, h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .party-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 30px;
+      width: 100%;
+      max-width: 900px;
+      box-sizing: border-box;
+      padding: 0 15px;
+    }
+
+    .party-card {
+      width: 130px;
+      height: 130px;
+      border-radius: 12px;
+      background: #333; /* 기본 배경색 (덮어씌워질 예정) */
+      color: #fff; /* 기본 글자색 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    /* 입력란 스타일 수정: 배경색과 글자색 및 폰트 적용 */
+    .party-card input {
+      font-family: 'Danjo-bold-Regular', sans-serif;
+      width: 60px;
+      text-align: center;
+      font-size: 18px;
+      margin: 6px 0;
+      border-radius: 4px;
+      border: none;
+      padding: 4px;
+      color: rgba(255, 255, 255, 0.75); /* 글자색 흰색에 투명도 75% */
+      transition: color 0.2s ease-in-out;
+    }
+
+    /* 입력란에 포커스될 때 글자 투명도 제거 */
+    .party-card input:focus {
+        color: white; /* 포커스 시 글자색 흰색 (투명도 없음) */
+        outline: none;
+    }
+
+    .calculate-button {
+      font-family: 'Danjo-bold-Regular', sans-serif;
+      display: block;
+      margin: 0 auto 30px;
+      padding: 14px 40px;
+      font-size: 16px;
+      font-weight: bold;
+      background: #004c47;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 900px;
+      box-sizing: border-box;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      margin-bottom: 30px;
+      font-size: 14px;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 900px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 6px 8px;
+      text-align: center;
+    }
+
+    th {
+      background: #eee;
+    }
+
+    .winner {
+      font-weight: bold;
+      background: #d0ffd0;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    /* New styles for Seat Projection */
+    .seat-projection-container {
+      width: 100%;
+      max-width: 900px;
+      background-color: #e0e0e0;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      margin-top: 30px;
+      margin-bottom: 30px;
+      box-sizing: border-box;
+    }
+
+    .seat-projection-title {
+        font-size: 1.8em;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .seat-projection-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .projection-party-card {
+      width: 140px;
+      height: 120px;
+      border-radius: 12px;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      text-align: center;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .projection-party-name {
+      font-size: 1.1em;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .projection-seats {
+      font-size: 2.5em;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .projection-percentage {
+        font-size: 0.9em;
+        color: rgba(255, 255, 255, 0.9);
+        margin-top: -3px;
+    }
+
+    .projection-change {
+        font-size: 0.9em;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* 막대 그래프 스타일 */
+    .seat-bar-container {
+        width: 100%;
+        height: 25px;
+        background-color: #ccc;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 25px;
+        display: flex;
+    }
+
+    .seat-bar-segment {
+        height: 100%;
+    }
+
+    /* Individual Constituency Results 섹션 */
+    .constituency-results {
+        width: 100%;
+        max-width: 900px;
+        background-color: #e0e0e0;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        margin-top: 30px;
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .constituency-results h3 {
+        margin-top: 0;
+    }
+
+    .constituency-select-container {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* 드롭다운에도 Danjo 폰트 적용 */
+    .constituency-select-container select {
+        font-family: 'Danjo-bold-Regular', sans-serif;
+        width: 80%;
+        max-width: 400px;
+        padding: 8px 12px;
+        font-size: 1em;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        appearance: none;
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.2-6.5H18.6c-5%200-9.3%201.8-12.9%205.5-3.8%203.7-5.7%208-5.7%2012.9v120.9c0%204.9%201.9%209.2%205.7%2012.9%203.6%203.7%207.9%205.5%2012.9%205.5h255.2c5%200%209.3-1.8%2012.9-5.5%203.8-3.7%205.7-8%205.7-12.9z%22%2F%3E%3C%2Fsvg%3E');
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 12px;
+        cursor: pointer;
+    }
+
+    .constituency-detail {
+        margin-top: 15px;
+        font-size: 0.95em;
+        color: #555;
+    }
+    .constituency-detail ul {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0;
+        text-align: left;
+    }
+    .constituency-detail ul li {
+        margin-bottom: 5px;
+        padding: 3px 0;
+    }
+    .constituency-detail ul li .dot {
+        vertical-align: middle;
+    }
+
+    /* 모바일용 미디어 쿼리 */
+    @media (max-width: 768px) {
+        .content-wrapper {
+            padding: 15px;
+        }
+        .party-card {
+            width: 100px;
+            height: 100px;
+            font-size: 0.9em;
+        }
+        .party-card input {
+            width: 50px;
+            font-size: 16px;
+        }
+        .calculate-button {
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .projection-party-card {
+            width: 120px;
+            height: 100px;
+        }
+        .projection-seats {
+            font-size: 2em;
+        }
+        table {
+            font-size: 12px;
+        }
+        th, td {
+            padding: 4px 6px;
+        }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="background-image-blur"></div>
+
+  <div class="content-wrapper">
+    <h2>1933, 체제를 돌러보다</h2>
+
+    <div class="party-grid" id="partyGrid"></div>
+    <button class="calculate-button" onclick="runPrediction()">의석 및 결과 계산</button>
+
+    <div class="seat-projection-container">
+      <div class="seat-projection-title">예측 의석</div>
+      <div class="seat-projection-grid" id="seatProjectionGrid"></div>
+      <div class="seat-bar-container" id="seatBarContainer"></div>
+    </div>
+
+    <h3>📍 지역별 예측</h3>
+    <div id="districtResults"></div>
+
+    <div class="constituency-results">
+      <h3>개별 선거구 결과</h3>
+      <div class="constituency-select-container">
+        <select onchange="showConstituencyDetail(this.value)">
+          <option value="">선거구를 검색하거나 선택하세요...</option>
+          </select>
+      </div>
+      <div class="constituency-detail" id="constituencyDetail">
+        자세한 분석을 보려면 선거구를 선택하세요.
+      </div>
+    </div>
+  </div>
+  <script>
+    const TOTAL_SEATS = 647; // 1933년 3월 총선 기준 총 의석수
+    const ELECTORAL_THRESHOLD = 0; // 바이마르 공화국 총선은 전국 단위 봉쇄 조항 없음
+
+    const parties = [
+      // 이미지 104218.jpg 우측 차트 데이터 기반
+      { id: "nazi", name: "Nazi Party", color: "#8B0000", vote: 43.91, regionOnly: null }, // Nazi Party (갈색/어두운 빨강)
+      { id: "spd", name: "Social Democratic Party", color: "#FF0000", vote: 18.25, regionOnly: null }, // Social Democratic Party (빨강)
+      { id: "kpd", name: "Communist Party", color: "#000000", vote: 12.32, regionOnly: null }, // Communist Party (검정)
+      { id: "zentrum", name: "Catholic Centre Party", color: "#008000", vote: 11.25, regionOnly: null }, // Catholic Centre Party (초록)
+      { id: "dnvp", name: "German National People's Party", color: "#0000FF", vote: 8.34, regionOnly: null }, // German National People's Party (파랑)
+      { id: "bvp", name: "Bavarian People's Party", color: "#800080", vote: 2.73, regionOnly: "bavaria" }, // Bavarian People's Party (보라색), 바이에른 지역구 특화
+      { id: "dvp", name: "German People's Party", color: "#FFBF00", vote: 1.10, regionOnly: null }, // German People's Party (주황)
+      { id: "csdv", name: "Christian-Social People's Service", color: "#00BFFF", vote: 0.98, regionOnly: null }, // Christian-Social People's Service (하늘색)
+      { id: "dstp", name: "German State Party", color: "#ADD8E6", vote: 0.85, regionOnly: null }, // German State Party (밝은 파랑)
+      { id: "wp", name: "German Peasants' Party", color: "#32CD32", vote: 0.29, regionOnly: null }, // German Peasants' Party (라임 그린)
+      { id: "wirtschaftspartei", name: "Economic Party of the Middle Class", color: "#FFD700", vote: 0.31, regionOnly: null }, // Economic Party of the Middle Class (금색)
+      { id: "landbund", name: "Reich Agricultural League", color: "#A0522D", vote: 0.21, regionOnly: null } // Reich Agricultural League (황토색)
+    ];
+
+// 1933년 3월 독일 총선 선거구 데이터 (이미지 104218.jpg 지도 기반)
+const districts = [
+  { id: 1, name: "East Prussia", seats: 18 },
+  { id: 2, name: "Berlin", seats: 19 },
+  { id: 3, name: "Potsdam I", seats: 19 },
+  { id: 4, name: "Potsdam II", seats: 16 },
+  { id: 5, name: "Frankfurt an der Oder", seats: 13 },
+  { id: 6, name: "Pomerania", seats: 17 },
+  { id: 7, name: "Mecklenburg", seats: 7 },
+  { id: 8, name: "Schleswig-Holstein", seats: 15 },
+  { id: 9, name: "Hamburg", seats: 11 },
+  { id: 10, name: "Weser-Ems", seats: 14 },
+  { id: 11, name: "East Hanover", seats: 9 },
+  { id: 12, name: "South Hanover-Braunschweig", seats: 19 },
+  { id: 13, name: "Magdeburg", seats: 17 },
+  { id: 14, name: "Merseburg", seats: 13 },
+  { id: 15, name: "Hesse-Nassau", seats: 23 },
+  { id: 16, name: "Thuringia", seats: 19 },
+  { id: 17, name: "Saxony", seats: 21 },
+  { id: 18, name: "Leipzig", seats: 13 },
+  { id: 19, name: "Dresden-Bautzen", seats: 19 },
+  { id: 20, name: "Chemnitz-Zwickau", seats: 17 },
+  { id: 21, name: "Upper Bavaria-Swabia", seats: 19 },
+  { id: 22, name: "Lower Bavaria-Upper Palatinate", seats: 9 },
+  { id: 23, name: "Franconia", seats: 24 },
+  { id: 24, name: "Palatinate", seats: 8 },
+  { id: 25, name: "Württemberg", seats: 24 },
+  { id: 26, name: "Baden", seats: 21 },
+  { id: 27, name: "Cologne-Aachen", seats: 19 },
+  { id: 28, name: "Koblenz-Trier", seats: 11 },
+  { id: 29, name: "Hesse-Darmstadt", seats: 13 },
+  { id: 30, name: "Düsseldorf East", seats: 21 },
+  { id: 31, name: "Düsseldorf West", seats: 17 },
+  { id: 32, name: "Westphalia North", seats: 24 },
+  { id: 33, name: "Westphalia South", seats: 21 },
+  { id: 34, name: "Breslau", seats: 17 },
+  { id: 35, name: "Oppeln", seats: 12 },
+  { id: 36, name: "Liegnitz", seats: 11 }
+];
+// 지도에 있는 의석수를 모두 더하면 647이 됩니다.
+
+    // 구역 드롭다운 채우기
+    function populateConstituencyDropdown() {
+        const select = document.querySelector('.constituency-select-container select');
+        districts.forEach(district => {
+            const option = document.createElement('option');
+            option.value = district.id;
+            option.textContent = district.name;
+            select.appendChild(option);
+        });
+    }
+
+    // 구역 상세 정보 표시: 정당별 득표율을 표시하도록 수정
+    function showConstituencyDetail(districtId) {
+        const detailDiv = document.getElementById('constituencyDetail');
+        if (districtId === "") {
+            detailDiv.innerHTML = "자세한 분석을 보려면 선거구를 선택하세요.";
+            return;
+        }
+
+        const selectedDistrict = districts.find(d => d.id == districtId);
+        if (!selectedDistrict) {
+            detailDiv.innerHTML = "선거구를 찾을 수 없습니다.";
+            return;
+        }
+
+        let rawVotes = {}, totalDistrictVotes = 0;
+
+        parties.forEach(p => {
+          let shouldInclude = true;
+          // 'regionOnly' 로직: Bavaria (바이에른) 및 Hanover (하노버) 지역 정당만 해당
+          if (p.regionOnly) {
+            const districtNameLower = selectedDistrict.name.toLowerCase();
+            if (p.regionOnly === "bavaria" && 
+                !(districtNameLower.includes("bavaria") || 
+                  districtNameLower.includes("franconia") || 
+                  districtNameLower.includes("palatinate") || 
+                  districtNameLower.includes("upper bavaria") || 
+                  districtNameLower.includes("lower bavaria"))) {
+              shouldInclude = false;
+            } 
+            else if (p.regionOnly === "hanover" && !districtNameLower.includes("hanover")) {
+              shouldInclude = false;
+            }
+          }
+
+          if (shouldInclude) {
+            const partyObj = parties.find(party => party.id === p.id);
+            const noise = (Math.random() * 10 - 5);
+            const raw = Math.max(0, partyObj.vote + noise);
+            rawVotes[p.id] = raw;
+            totalDistrictVotes += raw;
+          }
+        });
+
+        let normalized = {};
+        for (let pid in rawVotes) {
+          normalized[pid] = (rawVotes[pid] / totalDistrictVotes) * 100;
+        }
+
+        let detailHtml = `<h4>${selectedDistrict.name} (${selectedDistrict.seats} 의석)</h4>`;
+        detailHtml += `<ul>`;
+
+        const sortedDistrictParties = Object.keys(normalized).map(pid => {
+            return {
+                party: parties.find(p => p.id === pid),
+                percentage: normalized[pid]
+            };
+        }).sort((a, b) => b.percentage - a.percentage);
+
+        sortedDistrictParties.forEach(({ party, percentage }) => {
+            detailHtml += `<li><span class="dot" style="background:${party.color}"></span> ${party.name}: ${percentage.toFixed(1)}%</li>`;
+        });
+        detailHtml += `</ul>`;
+
+        detailDiv.innerHTML = detailHtml;
+    }
+
+    function renderPartyCards() {
+      const grid = document.getElementById("partyGrid");
+      grid.innerHTML = "";
+      parties.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "party-card";
+        card.style.backgroundColor = p.color;
+        card.innerHTML = `
+          <div>${p.name}</div>
+          <input type="number" value="${p.vote}" onchange="updateVote('${p.id}', this.value)"
+                 style="background-color: ${p.color}; color: rgba(255, 255, 255, 0.75);">
+          <small>${p.regionOnly ? p.regionOnly.charAt(0).toUpperCase() + p.regionOnly.slice(1) : '전국'}</small>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function updateVote(id, value) {
+      const party = parties.find(p => p.id === id);
+      party.vote = parseFloat(value) || 0;
+    }
+
+    function allocateSeats(partyPercents, seats) {
+      let scores = [];
+      // 봉쇄 조항이 0%이므로 모든 정당이 참여
+      let totalQualifiedPercent = 0;
+      Object.keys(partyPercents).forEach(pid => {
+          totalQualifiedPercent += partyPercents[pid];
+      });
+
+      Object.keys(partyPercents).forEach(pid => {
+          const recalculatedPercent = totalQualifiedPercent > 0 ? (partyPercents[pid] / totalQualifiedPercent) * 100 : 0;
+          
+          for (let i = 0; i < seats; i++) {
+            scores.push({ id: pid, score: recalculatedPercent / (2 * i + 1) });
+          }
+      });
+      
+      scores.sort((a, b) => b.score - a.score);
+      let result = {};
+      scores.slice(0, seats).forEach(s => {
+        result[s.id] = (result[s.id] || 0) + 1;
+      });
+      return result;
+    }
+
+    function runPrediction() {
+      const districtResults = document.getElementById('districtResults');
+      const seatProjectionGrid = document.getElementById('seatProjectionGrid');
+      const seatBarContainer = document.getElementById('seatBarContainer');
+
+      let nationalSeats = {};
+      let nationalTotalVotes = 0;
+      let partyNationalVotes = {};
+
+      districtResults.innerHTML = "";
+      seatProjectionGrid.innerHTML = "";
+      seatBarContainer.innerHTML = "";
+
+      const table = document.createElement("table");
+      const header = `<tr>
+        <th>구역</th>
+        ${parties.map(p => `<th>${p.name}</th>`).join("")}
+        <th>승자</th>
+      </tr>`;
+      table.innerHTML = header;
+
+      // 1. 모든 지역구의 raw votes를 합산하여 전국 총 투표수 및 정당별 전국 투표수 계산
+      districts.forEach(district => {
+        let rawVotes = {}, totalDistrictVotes = 0;
+
+        parties.forEach(p => {
+          let shouldInclude = true;
+          if (p.regionOnly) {
+            const districtNameLower = district.name.toLowerCase();
+            // 바이에른 지역 정당은 해당 지역구에만 적용
+            if (p.regionOnly === "bavaria" && 
+                !(districtNameLower.includes("bavaria") || 
+                  districtNameLower.includes("franconia") || 
+                  districtNameLower.includes("palatinate") ||
+                  districtNameLower.includes("upper bavaria") || 
+                  districtNameLower.includes("lower bavaria"))) {
+              shouldInclude = false;
+            } 
+            // 하노버 지역 정당은 해당 지역구에만 적용 (이 데이터에는 없지만 혹시 모를 대비)
+            else if (p.regionOnly === "hanover" && !districtNameLower.includes("hanover")) {
+              shouldInclude = false;
+            }
+          }
+
+          if (shouldInclude) {
+            const noise = (Math.random() * 10 - 5);
+            const raw = Math.max(0, p.vote + noise);
+            rawVotes[p.id] = raw;
+            totalDistrictVotes += raw;
+          }
+        });
+
+        for (let pid in rawVotes) {
+            partyNationalVotes[pid] = (partyNationalVotes[pid] || 0) + rawVotes[pid];
+        }
+        nationalTotalVotes += totalDistrictVotes;
+      });
+
+      // 2. 전국 득표율 계산 (봉쇄 조항은 0%이므로 모든 정당이 'qualified')
+      const qualifiedNationalParties = [];
+      const nationalPartyPercentages = {};
+      
+      parties.forEach(p => {
+          const nationalPercent = (partyNationalVotes[p.id] / nationalTotalVotes) * 100;
+          nationalPartyPercentages[p.id] = nationalPercent;
+
+          // 봉쇄 조항이 0%이므로 모든 정당이 자동으로 포함
+          qualifiedNationalParties.push(p.id);
+      });
+
+      // 3. 각 지역구별 의석 할당 (전국 봉쇄 조항 통과한 정당만 참여)
+      districts.forEach(district => {
+        let rawVotesForDistrict = {}, totalDistrictVotesForAllocation = 0;
+
+        parties.forEach(p => {
+            // 모든 정당이 참여하므로 조건 검사 필요 없음
+            // (그러나 지역 특화 정당은 해당 지역구에서만 투표가 반영됨)
+            let shouldIncludeInDistrict = true;
+            if (p.regionOnly) {
+                const districtNameLower = district.name.toLowerCase();
+                if (p.regionOnly === "bavaria" && 
+                    !(districtNameLower.includes("bavaria") || 
+                      districtNameLower.includes("franconia") || 
+                      districtNameLower.includes("palatinate") || 
+                      districtNameLower.includes("upper bavaria") || 
+                      districtNameLower.includes("lower bavaria"))) {
+                    shouldIncludeInDistrict = false;
+                }
+                else if (p.regionOnly === "hanover" && !districtNameLower.includes("hanover")) {
+                    shouldIncludeInDistrict = false;
+                }
+            }
+
+            if (shouldIncludeInDistrict) {
+                const partyObj = parties.find(party => party.id === p.id);
+                const noise = (Math.random() * 10 - 5);
+                const raw = Math.max(0, partyObj.vote + noise);
+                rawVotesForDistrict[p.id] = raw;
+                totalDistrictVotesForAllocation += raw;
+            }
+        });
+
+
+        let normalizedDistrictAllocation = {};
+        Object.keys(rawVotesForDistrict).forEach(pid => {
+            if (totalDistrictVotesForAllocation > 0) {
+                normalizedDistrictAllocation[pid] = (rawVotesForDistrict[pid] / totalDistrictVotesForAllocation) * 100;
+            } else {
+                normalizedDistrictAllocation[pid] = 0;
+            }
+        });
+
+        const seatMap = allocateSeats(normalizedDistrictAllocation, district.seats);
+        Object.entries(seatMap).forEach(([id, count]) => {
+          nationalSeats[id] = (nationalSeats[id] || 0) + count;
+        });
+
+        // 구역별 승자 결정
+        let winnerInDistrict = null;
+        let maxPercentInDistrict = -1;
+        Object.keys(normalizedDistrictAllocation).forEach(pid => {
+            if (normalizedDistrictAllocation[pid] > maxPercentInDistrict) {
+                maxPercentInDistrict = normalizedDistrictAllocation[pid];
+                winnerInDistrict = parties.find(p => p.id === pid);
+            }
+        });
+
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${district.name}</td>`;
+        parties.forEach(p => {
+          const districtPercentage = (rawVotesForDistrict[p.id] !== undefined && totalDistrictVotesForAllocation > 0) ? 
+                                     ((rawVotesForDistrict[p.id] / totalDistrictVotesForAllocation) * 100).toFixed(1) + '%' : '-';
+          
+          const allocatedSeats = (seatMap[p.id] || 0); // 봉쇄 조항 없으므로 0으로 강제할 필요 없음
+          
+          row.innerHTML += `<td>${districtPercentage}<br><b>${allocatedSeats}</b></td>`;
+        });
+
+        if (winnerInDistrict) {
+            row.innerHTML += `<td class="winner"><span class="dot" style="background:${winnerInDistrict.color}"></span>${winnerInDistrict.name}</td>`;
+        } else {
+            row.innerHTML += `<td class="winner">-</td>`;
+        }
+        table.appendChild(row);
+      });
+
+      districtResults.appendChild(table);
+
+      const totalCalculatedSeats = Object.values(nationalSeats).reduce((sum, seats) => sum + seats, 0);
+      console.log("시뮬레이터에서 계산된 총 의석수 (봉쇄 조항 없음):", totalCalculatedSeats);
+
+      const partiesWithSeats = Object.keys(nationalSeats).filter(id => nationalSeats[id] > 0);
+
+      const sortedParties = partiesWithSeats.map(id => {
+          const party = parties.find(p => p.id === id);
+          const nationalPercentage = nationalPartyPercentages[id];
+          return {
+              party: party,
+              seats: nationalSeats[id],
+              percentage: nationalPercentage.toFixed(1) + '%'
+          };
+      }).sort((a, b) => b.seats - a.seats);
+
+      sortedParties.forEach(({ party, seats, percentage }) => {
+          const partyCard = document.createElement("div");
+          partyCard.className = "projection-party-card";
+          partyCard.style.backgroundColor = party.color;
+          
+          partyCard.innerHTML = `
+              <div class="projection-party-name">${party.name}</div>
+              <div class="projection-seats">${seats}</div>
+              <div class="projection-percentage">${percentage}</div>
+              <div class="projection-change"></div>
+          `;
+          seatProjectionGrid.appendChild(partyCard);
+      });
+
+      sortedParties.forEach(({ party, seats }) => {
+          const segment = document.createElement('div');
+          segment.className = 'seat-bar-segment';
+          segment.style.backgroundColor = party.color;
+          segment.style.width = `${(seats / totalCalculatedSeats) * 100}%`;
+          seatBarContainer.appendChild(segment);
+      });
+      
+      const select = document.querySelector('.constituency-select-container select');
+      select.value = "";
+      document.getElementById('constituencyDetail').innerHTML = "자세한 분석을 보려면 선거구를 선택하세요.";
+    }
+
+    // 페이지 로드 시 실행
+    renderPartyCards();
+    populateConstituencyDropdown();
+  </script>
+
+</body>
+</html>
