@@ -341,7 +341,7 @@
   <div class="background-image-blur"></div>
 
   <div class="content-wrapper">
-    <h2>1933, 체제를 돌러보다</h2>
+    <h2>🗳️ 1933, 체제를 돌러보다</h2>
 
     <div class="party-grid" id="partyGrid"></div>
     <button class="calculate-button" onclick="runPrediction()">의석 및 결과 계산</button>
@@ -372,59 +372,58 @@
     const ELECTORAL_THRESHOLD = 0; // 바이마르 공화국 총선은 전국 단위 봉쇄 조항 없음
 
     const parties = [
-      // 이미지 104218.jpg 우측 차트 데이터 기반
-      { id: "nazi", name: "Nazi Party", color: "#8B0000", vote: 43.91, regionOnly: null }, // Nazi Party (갈색/어두운 빨강)
-      { id: "spd", name: "Social Democratic Party", color: "#FF0000", vote: 18.25, regionOnly: null }, // Social Democratic Party (빨강)
-      { id: "kpd", name: "Communist Party", color: "#000000", vote: 12.32, regionOnly: null }, // Communist Party (검정)
-      { id: "zentrum", name: "Catholic Centre Party", color: "#008000", vote: 11.25, regionOnly: null }, // Catholic Centre Party (초록)
-      { id: "dnvp", name: "German National People's Party", color: "#0000FF", vote: 8.34, regionOnly: null }, // German National People's Party (파랑)
-      { id: "bvp", name: "Bavarian People's Party", color: "#800080", vote: 2.73, regionOnly: "bavaria" }, // Bavarian People's Party (보라색), 바이에른 지역구 특화
-      { id: "dvp", name: "German People's Party", color: "#FFBF00", vote: 1.10, regionOnly: null }, // German People's Party (주황)
-      { id: "csdv", name: "Christian-Social People's Service", color: "#00BFFF", vote: 0.98, regionOnly: null }, // Christian-Social People's Service (하늘색)
-      { id: "dstp", name: "German State Party", color: "#ADD8E6", vote: 0.85, regionOnly: null }, // German State Party (밝은 파랑)
-      { id: "wp", name: "German Peasants' Party", color: "#32CD32", vote: 0.29, regionOnly: null }, // German Peasants' Party (라임 그린)
-      { id: "wirtschaftspartei", name: "Economic Party of the Middle Class", color: "#FFD700", vote: 0.31, regionOnly: null }, // Economic Party of the Middle Class (금색)
-      { id: "landbund", name: "Reich Agricultural League", color: "#A0522D", vote: 0.21, regionOnly: null } // Reich Agricultural League (황토색)
+      // 이미지 104218.jpg 우측 차트 데이터 기반, 줄임말 적용
+      { id: "nsdap", name: "NSDAP", color: "#8B0000", vote: 43.91, regionOnly: null }, // Nazi Party
+      { id: "spd", name: "SPD", color: "#FF0000", vote: 18.25, regionOnly: null }, // Social Democratic Party
+      { id: "kpd", name: "KPD", color: "#000000", vote: 12.32, regionOnly: null }, // Communist Party
+      { id: "zentrum", name: "Zentrum", color: "#008000", vote: 11.25, regionOnly: null }, // Catholic Centre Party
+      { id: "dnvp", name: "DNVP", color: "#0000FF", vote: 8.34, regionOnly: null }, // German National People's Party
+      { id: "bvp", name: "BVP", color: "#800080", vote: 2.73, regionOnly: "bavaria" }, // Bavarian People's Party (바이에른 지역구 특화)
+      { id: "dvp", name: "DVP", color: "#FFBF00", vote: 1.10, regionOnly: null }, // German People's Party
+      { id: "csdv", name: "CSDV", color: "#00BFFF", vote: 0.98, regionOnly: null }, // Christian-Social People's Service
+      { id: "dstp", name: "DStP", color: "#ADD8E6", vote: 0.85, regionOnly: null }, // German State Party
+      { id: "wp", name: "WP", color: "#32CD32", vote: 0.29, regionOnly: null }, // German Peasants' Party (Wirtschaftspartei / Economic Party of the Middle Class)
+      { id: "rlb", name: "RLB", color: "#A0522D", vote: 0.21, regionOnly: null } // Reich Agricultural League
     ];
 
 // 1933년 3월 독일 총선 선거구 데이터 (이미지 104218.jpg 지도 기반)
 const districts = [
-  { id: 1, name: "East Prussia", seats: 18 },
-  { id: 2, name: "Berlin", seats: 19 },
-  { id: 3, name: "Potsdam I", seats: 19 },
-  { id: 4, name: "Potsdam II", seats: 16 },
-  { id: 5, name: "Frankfurt an der Oder", seats: 13 },
-  { id: 6, name: "Pomerania", seats: 17 },
-  { id: 7, name: "Mecklenburg", seats: 7 },
-  { id: 8, name: "Schleswig-Holstein", seats: 15 },
-  { id: 9, name: "Hamburg", seats: 11 },
-  { id: 10, name: "Weser-Ems", seats: 14 },
-  { id: 11, name: "East Hanover", seats: 9 },
-  { id: 12, name: "South Hanover-Braunschweig", seats: 19 },
-  { id: 13, name: "Magdeburg", seats: 17 },
-  { id: 14, name: "Merseburg", seats: 13 },
-  { id: 15, name: "Hesse-Nassau", seats: 23 },
-  { id: 16, name: "Thuringia", seats: 19 },
-  { id: 17, name: "Saxony", seats: 21 },
-  { id: 18, name: "Leipzig", seats: 13 },
-  { id: 19, name: "Dresden-Bautzen", seats: 19 },
-  { id: 20, name: "Chemnitz-Zwickau", seats: 17 },
-  { id: 21, name: "Upper Bavaria-Swabia", seats: 19 },
-  { id: 22, name: "Lower Bavaria-Upper Palatinate", seats: 9 },
-  { id: 23, name: "Franconia", seats: 24 },
-  { id: 24, name: "Palatinate", seats: 8 },
-  { id: 25, name: "Württemberg", seats: 24 },
-  { id: 26, name: "Baden", seats: 21 },
-  { id: 27, name: "Cologne-Aachen", seats: 19 },
-  { id: 28, name: "Koblenz-Trier", seats: 11 },
-  { id: 29, name: "Hesse-Darmstadt", seats: 13 },
-  { id: 30, name: "Düsseldorf East", seats: 21 },
-  { id: 31, name: "Düsseldorf West", seats: 17 },
-  { id: 32, name: "Westphalia North", seats: 24 },
-  { id: 33, name: "Westphalia South", seats: 21 },
-  { id: 34, name: "Breslau", seats: 17 },
-  { id: 35, name: "Oppeln", seats: 12 },
-  { id: 36, name: "Liegnitz", seats: 11 }
+  { id: 1, name: "동프로이센", seats: 18 }, /* 1. East Prussia */
+  { id: 2, name: "베를린", seats: 19 }, /* 2. Berlin */
+  { id: 3, name: "포츠담 I", seats: 19 }, /* 3. Potsdam I */
+  { id: 4, name: "포츠담 II", seats: 16 }, /* 4. Potsdam II */
+  { id: 5, name: "프랑크푸르트 안 데어 오더", seats: 13 }, /* 5. Frankfurt an der Oder */
+  { id: 6, name: "포메라니아", seats: 17 }, /* 6. Pomerania */
+  { id: 7, name: "메클렌부르크", seats: 7 }, /* 7. Mecklenburg */
+  { id: 8, name: "슐레스비히-홀슈타인", seats: 15 }, /* 8. Schleswig-Holstein */
+  { id: 9, name: "함부르크", seats: 11 }, /* 9. Hamburg */
+  { id: 10, name: "베저-엠스", seats: 14 }, /* 10. Weser-Ems */
+  { id: 11, name: "동하노버", seats: 9 }, /* 11. East Hanover */
+  { id: 12, name: "남하노버-브라운슈바이크", seats: 19 }, /* 12. South Hanover-Braunschweig */
+  { id: 13, name: "마그데부르크", seats: 17 }, /* 13. Magdeburg */
+  { id: 14, name: "메르제부르크", seats: 13 }, /* 14. Merseburg */
+  { id: 15, name: "헤센-나사우", seats: 23 }, /* 15. Hesse-Nassau */
+  { id: 16, name: "튀링겐", seats: 19 }, /* 16. Thuringia */
+  { id: 17, name: "작센", seats: 21 }, /* 17. Saxony */
+  { id: 18, name: "라이프치히", seats: 13 }, /* 18. Leipzig */
+  { id: 19, name: "드레스덴-바우첸", seats: 19 }, /* 19. Dresden-Bautzen */
+  { id: 20, name: "켐니츠-츠비카우", seats: 17 }, /* 20. Chemnitz-Zwickau */
+  { id: 21, name: "상부 바이에른 - 슈바벤", seats: 19 }, /* 21. Upper Bavaria-Swabia */
+  { id: 22, name: "하부 바이에른 - 상부 팔츠", seats: 9 }, /* 22. Lower Bavaria-Upper Palatinate */
+  { id: 23, name: "프랑켄", seats: 24 }, /* 23. Franconia */
+  { id: 24, name: "팔츠", seats: 8 }, /* 24. Palatinate */
+  { id: 25, name: "뷔르템베르크", seats: 24 }, /* 25. Württemberg */
+  { id: 26, name: "바덴", seats: 21 }, /* 26. Baden */
+  { id: 27, name: "쾰른-아헨", seats: 19 }, /* 27. Cologne-Aachen */
+  { id: 28, name: "코블렌츠-트리어", seats: 11 }, /* 28. Koblenz-Trier */
+  { id: 29, name: "헤세-다름슈타트", seats: 13 }, /* 29. Hesse-Darmstadt */
+  { id: 30, name: "뒤셀도르프 동부", seats: 21 }, /* 30. Düsseldorf East */
+  { id: 31, name: "뒤셀도르프 서부", seats: 17 }, /* 31. Düsseldorf West */
+  { id: 32, name: "베스트팔렌 북부", seats: 24 }, /* 32. Westphalia North */
+  { id: 33, name: "베스트팔렌 남부", seats: 21 }, /* 33. Westphalia South */
+  { id: 34, name: "브레슬라우", seats: 17 }, /* 34. Breslau */
+  { id: 35, name: "오펠른", seats: 12 }, /* 35. Oppeln */
+  { id: 36, name: "리그니츠", seats: 11 } /* 36. Liegnitz */
 ];
 // 지도에 있는 의석수를 모두 더하면 647이 됩니다.
 
@@ -460,6 +459,7 @@ const districts = [
           // 'regionOnly' 로직: Bavaria (바이에른) 및 Hanover (하노버) 지역 정당만 해당
           if (p.regionOnly) {
             const districtNameLower = selectedDistrict.name.toLowerCase();
+            // 바이에른 지역 정당은 해당 지역구에만 적용
             if (p.regionOnly === "bavaria" && 
                 !(districtNameLower.includes("bavaria") || 
                   districtNameLower.includes("franconia") || 
@@ -468,6 +468,7 @@ const districts = [
                   districtNameLower.includes("lower bavaria"))) {
               shouldInclude = false;
             } 
+            // 하노버 지역 정당은 해당 지역구에만 적용 (이 데이터에는 없지만 혹시 모를 대비)
             else if (p.regionOnly === "hanover" && !districtNameLower.includes("hanover")) {
               shouldInclude = false;
             }
@@ -584,7 +585,7 @@ const districts = [
             if (p.regionOnly === "bavaria" && 
                 !(districtNameLower.includes("bavaria") || 
                   districtNameLower.includes("franconia") || 
-                  districtNameLower.includes("palatinate") ||
+                  districtNameLower.includes("palatinate") || 
                   districtNameLower.includes("upper bavaria") || 
                   districtNameLower.includes("lower bavaria"))) {
               shouldInclude = false;
